@@ -5,7 +5,7 @@
 
     <!-- 指定父项目 -->
     <parent>
-        <groupId>com.quanxiaoha</groupId>
+        <groupId>com.rednote</groupId>
         <artifactId>rednote</artifactId>
         <version>${revision}</version>
     </parent>
