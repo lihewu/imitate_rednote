@@ -18,6 +18,13 @@
     <description>小哈书：认证服务（负责处理用户登录、注册、账号注销等）</description>
 
     <dependencies>
+        <!-- 通用响应及异常类 -->
+        <dependency>
+            <groupId>com.rednote</groupId>
+            <artifactId>rednote-common</artifactId>
+            <version>${revision}</version>
+        </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
