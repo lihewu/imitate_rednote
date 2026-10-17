@@ -74,6 +74,12 @@
         <scope>import</scope>
       </dependency>
 
+      <!-- API 操作日志切面组件 -->
+      <dependency>
+        <groupId>com.rednote</groupId>
+        <artifactId>rednote-spring-boot-starter-biz-operationlog</artifactId>
+        <version>${revision}</version>
+      </dependency>
       <!-- Jackson：统一管理 JSON 核心库及 Java 时间类型扩展的版本 -->
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
