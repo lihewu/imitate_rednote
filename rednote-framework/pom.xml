@@ -21,6 +21,8 @@
     <modules>
         <!-- 通用工具组件 -->
         <module>rednote-common</module>
+        <!-- 业务日志切面组件 -->
+        <module>rednote-spring-boot-starter-biz-operationlog</module>
     </modules>
 
 </project>
