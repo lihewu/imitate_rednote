@@ -1,0 +1,10 @@
+server:
+  port: 8080 # 应用服务 WEB 访问端口
+
+spring:
+  profiles:
+    active: dev # 默认激活 dev 开发环境
+
+mybatis:
+  # MyBatis XML 文件所在位置
+  mapper-locations: classpath:/mapper/**/*.xml

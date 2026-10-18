@@ -1,0 +1,12 @@
+spring:
+  datasource:
+    # 数据库连接信息（连接池暂使用默认配置）
+    url: jdbc:mysql://127.0.0.1:3306/rednote?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai
+    username: root
+    password: 123456
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+logging:
+  level:
+    # mapper 接口所在包日志级别设为 debug，用于打印 SQL 日志
+    com.rednote.rednoteauth.domain.mapper: debug
