@@ -1,0 +1,11 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="DruidTests (no async stack traces)" type="JUnit" factoryName="JUnit" printAsyncStackTraceForExceptions="false">
+    <module name="rednote-auth" />
+    <option name="PACKAGE_NAME" value="com.rednote.rednoteauth" />
+    <option name="MAIN_CLASS_NAME" value="com.rednote.rednoteauth.DruidTests" />
+    <option name="TEST_OBJECT" value="class" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
