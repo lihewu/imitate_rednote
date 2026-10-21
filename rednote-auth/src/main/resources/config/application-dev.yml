@@ -1,10 +1,41 @@
 spring:
   datasource:
-    # 数据库连接信息（连接池暂使用默认配置）
-    url: jdbc:mysql://127.0.0.1:3306/rednote?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai
+    # 数据库连接信息
+    # 本地 MySQL 8 在关闭 SSL 时，允许获取 RSA 公钥以完成密码认证
+    url: jdbc:mysql://127.0.0.1:3306/rednote?useUnicode=true&characterEncoding=utf8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
     username: root
     password: 123456
     driver-class-name: com.mysql.cj.jdbc.Driver
+    type: com.alibaba.druid.pool.DruidDataSource
+    druid:
+      # 本地开发使用小规模连接池：初始连接数、最小空闲数、最大连接数
+      initial-size: 2
+      min-idle: 2
+      max-active: 10
+      # 获取连接的最大等待时间（毫秒）
+      max-wait: 30000
+      # 每分钟检查一次空闲连接，空闲超过 5 分钟可回收，最长保留 15 分钟
+      time-between-eviction-runs-millis: 60000
+      min-evictable-idle-time-millis: 300000
+      max-evictable-idle-time-millis: 900000
+      # 连接有效性检查 SQL，超时时间单位为秒
+      validation-query: SELECT 1
+      validation-query-timeout: 3
+      test-while-idle: true
+      test-on-borrow: false
+      test-on-return: false
+      # SQL 执行统计
+      filter:
+        stat:
+          enabled: true
+      # 本地开发监控页面：http://localhost:8080/druid/
+      stat-view-servlet:
+        enabled: true
+        url-pattern: /druid/*
+        allow: 127.0.0.1
+        login-username: admin
+        login-password: ${DRUID_MONITOR_PASSWORD:123456}
+        reset-enable: false
 
 logging:
   level:

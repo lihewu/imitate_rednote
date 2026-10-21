@@ -43,6 +43,7 @@
     <jackson.version>2.14.1</jackson.version>
     <mysql.version>8.0.33</mysql.version>
     <mybatis-spring-boot-starter.version>3.0.2</mybatis-spring-boot-starter.version>
+    <druid.version>1.2.23</druid.version>
   </properties>
 
   <!-- 统一依赖管理 -->
@@ -124,6 +125,13 @@
         <groupId>org.mybatis.spring.boot</groupId>
         <artifactId>mybatis-spring-boot-starter</artifactId>
         <version>${mybatis-spring-boot-starter.version}</version>
+      </dependency>
+
+      <!-- Druid 数据库连接池（Spring Boot 3） -->
+      <dependency>
+        <groupId>com.alibaba</groupId>
+        <artifactId>druid-spring-boot-3-starter</artifactId>
+        <version>${druid.version}</version>
       </dependency>
 
     </dependencies>
