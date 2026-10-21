@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+        PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "https://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+<generatorConfiguration>
+    <!-- 从 rednote-auth 目录执行 mvn mybatis-generator:generate，输出路径相对此目录 -->
+    <context id="rednote-auth" targetRuntime="MyBatis3" defaultModelType="flat">
+        <property name="javaFileEncoding" value="UTF-8" />
+        <property name="beginningDelimiter" value="`" />
+        <property name="endingDelimiter" value="`" />
+
+        <commentGenerator>
+            <property name="suppressDate" value="true" />
+        </commentGenerator>
+
+        <!-- 本地开发数据库；JDBC 驱动由 Maven 插件依赖提供 -->
+        <jdbcConnection driverClass="com.mysql.cj.jdbc.Driver"
+                        connectionURL="jdbc:mysql://127.0.0.1:3306/rednote?useUnicode=true&amp;characterEncoding=utf8&amp;useSSL=false&amp;allowPublicKeyRetrieval=true&amp;serverTimezone=Asia/Shanghai"
+                        userId="root"
+                        password="123456">
+            <property name="nullCatalogMeansCurrent" value="true" />
+        </jdbcConnection>
+
+        <!-- 日期时间字段使用 java.time 类型 -->
+        <javaTypeResolver>
+            <property name="useJSR310Types" value="true" />
+        </javaTypeResolver>
+
+        <javaModelGenerator targetPackage="com.rednote.rednoteauth.domain.dataobject"
+                            targetProject="src/main/java" />
+
+        <sqlMapGenerator targetPackage="mapper" targetProject="src/main/resources" />
+
+        <javaClientGenerator type="XMLMAPPER"
+                             targetPackage="com.rednote.rednoteauth.domain.mapper"
+                             targetProject="src/main/java" />
+
+        <!-- 用户表：生成 UserDO、UserDOMapper 和 UserDOMapper.xml -->
+        <table tableName="t_user" domainObjectName="UserDO"
+               enableCountByExample="false" enableSelectByExample="false"
+               enableUpdateByExample="false" enableDeleteByExample="false">
+            <generatedKey column="id" sqlStatement="JDBC" identity="true" />
+        </table>
+    </context>
+</generatorConfiguration>

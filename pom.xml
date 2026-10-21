@@ -34,6 +34,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <!-- Maven 相关版本号 -->
     <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
+    <mybatis-generator-maven-plugin.version>1.4.2</mybatis-generator-maven-plugin.version>
 
     <!-- 依赖包版本 -->
     <spring-boot.version>3.0.2</spring-boot.version>
@@ -141,6 +142,12 @@
     <!-- 统一插件管理 -->
     <pluginManagement>
       <plugins>
+        <!-- MyBatis 代码生成插件 -->
+        <plugin>
+          <groupId>org.mybatis.generator</groupId>
+          <artifactId>mybatis-generator-maven-plugin</artifactId>
+          <version>${mybatis-generator-maven-plugin.version}</version>
+        </plugin>
         <plugin>
           <groupId>org.springframework.boot</groupId>
           <artifactId>spring-boot-maven-plugin</artifactId>
