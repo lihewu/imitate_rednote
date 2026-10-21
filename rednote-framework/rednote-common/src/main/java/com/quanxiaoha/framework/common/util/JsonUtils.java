@@ -2,26 +2,35 @@ package com.quanxiaoha.framework.common.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import java.util.Objects;
 
 /**
  * JSON 工具类，提供对象序列化和反序列化。
- * Java 时间类型使用 ISO-8601 字符串，反序列化时忽略未知字段。
+ * 复用服务配置的 ObjectMapper，使用前通过 init 完成初始化。
  */
 public final class JsonUtils {
 
-    // 初始化后不再修改配置，可安全地在多个线程间复用。
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper()
-            .registerModule(new JavaTimeModule())
-            .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
-            .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+    // volatile 保证启动时注入的实例对其他线程可见；工具类不再单独配置 Jackson。
+    private static volatile ObjectMapper objectMapper;
 
     private JsonUtils() {
+    }
+
+    /**
+     * 在服务启动时传入已完成配置的 ObjectMapper，初始化后不再修改其配置。
+     */
+    public static void init(ObjectMapper mapper) {
+        objectMapper = Objects.requireNonNull(mapper, "mapper");
+    }
+
+    private static ObjectMapper getObjectMapper() {
+        ObjectMapper mapper = objectMapper;
+        if (mapper == null) {
+            throw new IllegalStateException("JsonUtils 未初始化，请先调用 JsonUtils.init(ObjectMapper)");
+        }
+        return mapper;
     }
 
     /**
@@ -31,7 +40,7 @@ public final class JsonUtils {
      */
     public static String toJsonString(Object value) {
         try {
-            return OBJECT_MAPPER.writeValueAsString(value);
+            return getObjectMapper().writeValueAsString(value);
         } catch (JsonProcessingException e) {
             throw new IllegalArgumentException("对象转换为 JSON 失败", e);
         }
@@ -45,7 +54,7 @@ public final class JsonUtils {
     public static <T> T parseObject(String json, Class<T> type) {
         Objects.requireNonNull(type, "type");
         try {
-            return OBJECT_MAPPER.readValue(json, type);
+            return getObjectMapper().readValue(json, type);
         } catch (JsonProcessingException e) {
             throw new IllegalArgumentException("JSON 转换为对象失败", e);
         }
@@ -59,7 +68,7 @@ public final class JsonUtils {
     public static <T> T parseObject(String json, TypeReference<T> type) {
         Objects.requireNonNull(type, "type");
         try {
-            return OBJECT_MAPPER.readValue(json, type);
+            return getObjectMapper().readValue(json, type);
         } catch (JsonProcessingException e) {
             throw new IllegalArgumentException("JSON 转换为泛型对象失败", e);
         }

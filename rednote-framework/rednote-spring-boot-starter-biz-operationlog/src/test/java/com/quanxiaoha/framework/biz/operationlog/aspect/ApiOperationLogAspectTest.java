@@ -4,7 +4,9 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.quanxiaoha.framework.biz.operationlog.config.ApiOperationLogAutoConfiguration;
+import com.quanxiaoha.framework.common.util.JsonUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,6 +30,7 @@ public class ApiOperationLogAspectTest {
 
     @Before
     public void setUp() {
+        JsonUtils.init(new ObjectMapper());
         logger = (Logger) LoggerFactory.getLogger(ApiOperationLogAspect.class);
         previousLevel = logger.getLevel();
         logger.setLevel(Level.INFO);

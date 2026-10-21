@@ -2,7 +2,12 @@ package com.quanxiaoha.framework.common.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.quanxiaoha.framework.common.response.Response;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.time.LocalDate;
@@ -13,6 +18,15 @@ import java.util.Map;
 import static org.junit.Assert.*;
 
 public class JsonUtilsTest {
+
+    @Before
+    public void initializeMapper() {
+        // 公共模块独立测试时，由测试提供 ObjectMapper，生产配置由服务统一管理。
+        JsonUtils.init(new ObjectMapper()
+                .registerModule(new JavaTimeModule())
+                .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+                .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES));
+    }
 
     @Test
     public void serializesAndRestoresTextWithSpecialCharacters() {
