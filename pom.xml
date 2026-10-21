@@ -35,6 +35,7 @@
     <!-- Maven 相关版本号 -->
     <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
     <mybatis-generator-maven-plugin.version>1.4.2</mybatis-generator-maven-plugin.version>
+    <flatten-maven-plugin.version>1.8.0</flatten-maven-plugin.version>
 
     <!-- 依赖包版本 -->
     <spring-boot.version>3.0.2</spring-boot.version>
@@ -180,6 +181,35 @@
         </plugin>
       </plugins>
     </pluginManagement>
+
+    <plugins>
+      <!-- 解析 CI Friendly 版本占位符，使安装后的模块 POM 可被独立构建引用 -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>flatten-maven-plugin</artifactId>
+        <version>${flatten-maven-plugin.version}</version>
+        <configuration>
+          <updatePomFile>true</updatePomFile>
+          <flattenMode>resolveCiFriendliesOnly</flattenMode>
+        </configuration>
+        <executions>
+          <execution>
+            <id>flatten</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>flatten</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>flatten.clean</id>
+            <phase>clean</phase>
+            <goals>
+              <goal>clean</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
 
   </build>
 
