@@ -18,6 +18,12 @@
     <description>小哈书：认证服务（负责处理用户登录、注册、账号注销等）</description>
 
     <dependencies>
+        <!-- Sa-Token 权限认证，版本由根 POM 统一管理 -->
+        <dependency>
+            <groupId>cn.dev33</groupId>
+            <artifactId>sa-token-spring-boot3-starter</artifactId>
+        </dependency>
+
         <!-- API 操作日志切面组件，版本由根 POM 统一管理 -->
         <dependency>
             <groupId>com.rednote</groupId>

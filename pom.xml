@@ -46,11 +46,19 @@
     <mysql.version>8.0.33</mysql.version>
     <mybatis-spring-boot-starter.version>3.0.2</mybatis-spring-boot-starter.version>
     <druid.version>1.2.23</druid.version>
+    <sa-token.version>1.46.0</sa-token.version>
   </properties>
 
   <!-- 统一依赖管理 -->
   <dependencyManagement>
     <dependencies>
+
+      <!-- Sa-Token 权限认证（Spring Boot 3） -->
+      <dependency>
+        <groupId>cn.dev33</groupId>
+        <artifactId>sa-token-spring-boot3-starter</artifactId>
+        <version>${sa-token.version}</version>
+      </dependency>
 
       <!-- Spring Boot BOM：统一管理 Web、Actuator、数据访问、测试等依赖 -->
       <dependency>
