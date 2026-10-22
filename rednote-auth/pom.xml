@@ -18,6 +18,12 @@
     <description>小哈书：认证服务（负责处理用户登录、注册、账号注销等）</description>
 
     <dependencies>
+        <!-- Redis，版本由根 POM 中的 Spring Boot BOM 管理 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+
         <!-- Sa-Token 权限认证，版本由根 POM 统一管理 -->
         <dependency>
             <groupId>cn.dev33</groupId>

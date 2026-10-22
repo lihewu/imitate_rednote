@@ -1,4 +1,13 @@
 spring:
+  data:
+    redis:
+      host: ${REDIS_HOST:127.0.0.1}
+      port: ${REDIS_PORT:6379}
+      # 本地 Redis 未设置密码时留空
+      password: ${REDIS_PASSWORD:}
+      database: ${REDIS_DATABASE:0}
+      connect-timeout: 3s
+      timeout: 3s
   datasource:
     # 数据库连接信息
     # 本地 MySQL 8 在关闭 SSL 时，允许获取 RSA 公钥以完成密码认证
