@@ -1,10 +1,13 @@
 package com.rednote.rednoteauth.service;
 
 import com.quanxiaoha.framework.common.exception.BizException;
+import com.rednote.rednoteauth.service.impl.VerificationCodeServiceImpl;
 import com.rednote.rednoteauth.sms.SmsSender;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.springframework.core.task.TaskExecutor;
+import org.springframework.core.task.TaskRejectedException;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.data.redis.core.script.RedisScript;
@@ -21,7 +24,8 @@ class VerificationCodeServiceTests {
     @SuppressWarnings("unchecked")
     private final ValueOperations<String, String> values = mock(ValueOperations.class);
     private final SmsSender sender = mock(SmsSender.class);
-    private final VerificationCodeService service = new VerificationCodeService(redis, sender);
+    private final TaskExecutor executor = mock(TaskExecutor.class);
+    private final VerificationCodeService service = new VerificationCodeServiceImpl(redis, sender, executor);
     private static final String PHONE = "18019939108";
     private static final String KEY = "verification_code:" + PHONE;
 
@@ -37,6 +41,9 @@ class VerificationCodeServiceTests {
         ArgumentCaptor<String> code = ArgumentCaptor.forClass(String.class);
         verify(values).setIfAbsent(eq(KEY), code.capture(), eq(Duration.ofMinutes(3)));
         assertTrue(code.getValue().matches("[0-9]{6}"));
+        verifyNoInteractions(sender);
+        when(values.get(KEY)).thenReturn(code.getValue());
+        runSubmittedTask();
         verify(sender).sendVerificationCode(PHONE, code.getValue());
     }
 
@@ -47,19 +54,48 @@ class VerificationCodeServiceTests {
         assertEquals("AUTH-20000", error.getErrorCode());
         assertEquals("请求太频繁，请3分钟后再试", error.getMessage());
         verifyNoInteractions(sender);
+        verifyNoInteractions(executor);
         verify(redis, never()).delete(anyString());
     }
 
     @Test
-    void failedDeliveryRemovesOnlyOwnCodeAndReturnsBusinessError() {
+    void failedAsyncDeliveryRemovesOnlyOwnCode() {
         when(values.setIfAbsent(eq(KEY), anyString(), any(Duration.class))).thenReturn(true);
         doThrow(new IllegalStateException("provider unavailable")).when(sender)
                 .sendVerificationCode(eq(PHONE), anyString());
+        service.send(PHONE);
+        ArgumentCaptor<String> code = ArgumentCaptor.forClass(String.class);
+        verify(values).setIfAbsent(eq(KEY), code.capture(), any(Duration.class));
+        when(values.get(KEY)).thenReturn(code.getValue());
+        assertDoesNotThrow(this::runSubmittedTask);
+        verify(redis).execute(any(RedisScript.class), eq(List.of(KEY)), eq(code.getValue()));
+    }
+
+    @Test
+    void rejectedTaskClearsReservationAndReturnsBusinessError() {
+        when(values.setIfAbsent(eq(KEY), anyString(), any(Duration.class))).thenReturn(true);
+        doThrow(new TaskRejectedException("full")).when(executor).execute(any(Runnable.class));
         BizException error = assertThrows(BizException.class, () -> service.send(PHONE));
         assertEquals("AUTH-20001", error.getErrorCode());
         ArgumentCaptor<String> code = ArgumentCaptor.forClass(String.class);
-        verify(sender).sendVerificationCode(eq(PHONE), code.capture());
+        verify(values).setIfAbsent(eq(KEY), code.capture(), any(Duration.class));
         verify(redis).execute(any(RedisScript.class), eq(List.of(KEY)), eq(code.getValue()));
+        verifyNoInteractions(sender);
+    }
+
+    @Test
+    void expiredQueuedTaskDoesNotSendSms() {
+        when(values.setIfAbsent(eq(KEY), anyString(), any(Duration.class))).thenReturn(true);
+        service.send(PHONE);
+        when(values.get(KEY)).thenReturn(null);
+        runSubmittedTask();
+        verifyNoInteractions(sender);
+    }
+
+    private void runSubmittedTask() {
+        ArgumentCaptor<Runnable> task = ArgumentCaptor.forClass(Runnable.class);
+        verify(executor).execute(task.capture());
+        task.getValue().run();
     }
 
     @Test
