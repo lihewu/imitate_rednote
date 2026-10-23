@@ -50,7 +50,7 @@
     <guava.version>33.4.8-jre</guava.version>
     <hutool.version>5.8.47</hutool.version>
     <commons-lang3.version>3.18.0</commons-lang3.version>
-    <aliyun-dysmsapi.version>4.5.1</aliyun-dysmsapi.version>
+    <aliyun-dysmsapi.version>4.6.0</aliyun-dysmsapi.version>
   </properties>
 
   <!-- 统一依赖管理 -->

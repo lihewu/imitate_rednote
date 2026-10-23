@@ -13,6 +13,7 @@ target/
 *.iws
 *.iml
 *.ipr
+.run/*.local.run.xml
 
 ### Eclipse ###
 .apt_generated
