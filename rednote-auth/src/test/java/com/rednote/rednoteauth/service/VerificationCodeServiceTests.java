@@ -41,7 +41,7 @@ class VerificationCodeServiceTests {
         ArgumentCaptor<String> code = ArgumentCaptor.forClass(String.class);
         verify(values).setIfAbsent(eq(KEY), code.capture(), eq(Duration.ofMinutes(3)));
         assertTrue(code.getValue().matches("[0-9]{6}"));
-        verifyNoInteractions(sender);
+        verify(sender, never()).sendVerificationCode(anyString(), anyString());
         when(values.get(KEY)).thenReturn(code.getValue());
         runSubmittedTask();
         verify(sender).sendVerificationCode(PHONE, code.getValue());
@@ -53,7 +53,7 @@ class VerificationCodeServiceTests {
         BizException error = assertThrows(BizException.class, () -> service.send(PHONE));
         assertEquals("AUTH-20000", error.getErrorCode());
         assertEquals("请求太频繁，请3分钟后再试", error.getMessage());
-        verifyNoInteractions(sender);
+        verify(sender, never()).sendVerificationCode(anyString(), anyString());
         verifyNoInteractions(executor);
         verify(redis, never()).delete(anyString());
     }
@@ -80,7 +80,7 @@ class VerificationCodeServiceTests {
         ArgumentCaptor<String> code = ArgumentCaptor.forClass(String.class);
         verify(values).setIfAbsent(eq(KEY), code.capture(), any(Duration.class));
         verify(redis).execute(any(RedisScript.class), eq(List.of(KEY)), eq(code.getValue()));
-        verifyNoInteractions(sender);
+        verify(sender, never()).sendVerificationCode(anyString(), anyString());
     }
 
     @Test
@@ -89,7 +89,7 @@ class VerificationCodeServiceTests {
         service.send(PHONE);
         when(values.get(KEY)).thenReturn(null);
         runSubmittedTask();
-        verifyNoInteractions(sender);
+        verify(sender, never()).sendVerificationCode(anyString(), anyString());
     }
 
     private void runSubmittedTask() {
@@ -99,10 +99,19 @@ class VerificationCodeServiceTests {
     }
 
     @Test
+    void disabledSmsFailsBeforeRedisOrTaskSubmission() {
+        doThrow(new BizException("AUTH-20001", "短信服务未启用，请检查运行配置"))
+                .when(sender).checkReady();
+        BizException error = assertThrows(BizException.class, () -> service.send(PHONE));
+        assertEquals("AUTH-20001", error.getErrorCode());
+        verifyNoInteractions(values, executor);
+    }
+
+    @Test
     void redisFailureDoesNotSendSms() {
         when(values.setIfAbsent(eq(KEY), anyString(), any(Duration.class)))
                 .thenThrow(new IllegalStateException("redis unavailable"));
         assertThrows(IllegalStateException.class, () -> service.send(PHONE));
-        verifyNoInteractions(sender);
+        verify(sender, never()).sendVerificationCode(anyString(), anyString());
     }
 }

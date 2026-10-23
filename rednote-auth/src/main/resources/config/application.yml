@@ -1,7 +1,7 @@
 server:
   port: 8080 # 应用服务 WEB 访问端口
 
-# 阿里云短信：签名、模板需审核通过，模板变量名为 code。
+# 阿里云号码认证短信：使用控制台赠送的配套签名和模板，模板变量为 code、min。
 sms:
   aliyun:
     enabled: ${ALIYUN_SMS_ENABLED:false}

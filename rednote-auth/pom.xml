@@ -20,7 +20,7 @@
     <dependencies>
         <dependency>
             <groupId>com.aliyun</groupId>
-            <artifactId>dysmsapi20170525</artifactId>
+            <artifactId>dypnsapi20170525</artifactId>
         </dependency>
         <!-- Redis，版本由根 POM 中的 Spring Boot BOM 管理 -->
         <dependency>

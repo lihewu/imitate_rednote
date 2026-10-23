@@ -39,6 +39,7 @@ public class VerificationCodeServiceImpl implements VerificationCodeService {
 
     @Override
     public void send(String phone) {
+        smsSender.checkReady();
         String key = RedisKeyConstants.buildVerificationCodeKey(phone);
         // 使用 Hutool 的安全随机数生成器，保留前导零，始终生成六位数字。
         String code = String.format(Locale.ROOT, "%06d", RandomUtil.getSecureRandom().nextInt(1_000_000));

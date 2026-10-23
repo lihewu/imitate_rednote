@@ -1,4 +1,4 @@
-package com.rednote.rednoteauth.config;
+package com.rednote.rednoteauth.sms;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -10,8 +10,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "sms.aliyun")
 public class SmsProperties {
     private boolean enabled;
-    private String accessKeyId;
-    private String accessKeySecret;
     private String signName;
     private String templateCode;
 }

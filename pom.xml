@@ -50,7 +50,7 @@
     <guava.version>33.4.8-jre</guava.version>
     <hutool.version>5.8.47</hutool.version>
     <commons-lang3.version>3.18.0</commons-lang3.version>
-    <aliyun-dysmsapi.version>4.6.0</aliyun-dysmsapi.version>
+    <aliyun-dypnsapi.version>2.0.0</aliyun-dypnsapi.version>
   </properties>
 
   <!-- 统一依赖管理 -->
@@ -58,8 +58,8 @@
     <dependencies>
       <dependency>
         <groupId>com.aliyun</groupId>
-        <artifactId>dysmsapi20170525</artifactId>
-        <version>${aliyun-dysmsapi.version}</version>
+        <artifactId>dypnsapi20170525</artifactId>
+        <version>${aliyun-dypnsapi.version}</version>
       </dependency>
       <dependency>
         <groupId>com.google.guava</groupId>
