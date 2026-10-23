@@ -1,6 +1,15 @@
 server:
   port: 8080 # 应用服务 WEB 访问端口
 
+# 阿里云短信：签名、模板需审核通过，模板变量名为 code。
+sms:
+  aliyun:
+    enabled: ${ALIYUN_SMS_ENABLED:false}
+    access-key-id: ${ALIYUN_ACCESS_KEY_ID:}
+    access-key-secret: ${ALIYUN_ACCESS_KEY_SECRET:}
+    sign-name: ${ALIYUN_SMS_SIGN_NAME:}
+    template-code: ${ALIYUN_SMS_TEMPLATE_CODE:}
+
 spring:
   profiles:
     active: dev # 默认激活 dev 开发环境

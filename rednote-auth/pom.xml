@@ -18,6 +18,10 @@
     <description>小哈书：认证服务（负责处理用户登录、注册、账号注销等）</description>
 
     <dependencies>
+        <dependency>
+            <groupId>com.aliyun</groupId>
+            <artifactId>dysmsapi20170525</artifactId>
+        </dependency>
         <!-- Redis，版本由根 POM 中的 Spring Boot BOM 管理 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

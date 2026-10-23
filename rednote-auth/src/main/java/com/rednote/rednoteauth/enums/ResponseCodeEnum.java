@@ -6,10 +6,17 @@ import com.quanxiaoha.framework.common.exception.BaseExceptionInterface;
 public enum ResponseCodeEnum implements BaseExceptionInterface {
 
     SYSTEM_ERROR(com.quanxiaoha.framework.common.enums.ResponseCodeEnum.SYSTEM_ERROR),
-    PARAM_NOT_VALID(com.quanxiaoha.framework.common.enums.ResponseCodeEnum.PARAM_NOT_VALID);
+    PARAM_NOT_VALID(com.quanxiaoha.framework.common.enums.ResponseCodeEnum.PARAM_NOT_VALID),
+    VERIFICATION_CODE_SEND_FREQUENTLY("AUTH-20000", "请求太频繁，请3分钟后再试"),
+    VERIFICATION_CODE_SEND_FAILED("AUTH-20001", "短信发送失败，请稍后重试");
 
     private final String errorCode;
     private final String errorMessage;
+
+    ResponseCodeEnum(String errorCode, String errorMessage) {
+        this.errorCode = errorCode;
+        this.errorMessage = errorMessage;
+    }
 
     ResponseCodeEnum(BaseExceptionInterface exception) {
         this.errorCode = exception.getErrorCode();
