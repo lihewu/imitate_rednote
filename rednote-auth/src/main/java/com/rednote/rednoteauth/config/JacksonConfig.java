@@ -8,7 +8,7 @@ import com.fasterxml.jackson.datatype.jsr310.deser.LocalTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalTimeSerializer;
-import com.quanxiaoha.framework.common.util.JsonUtils;
+import com.rednote.framework.common.util.JsonUtils;
 import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,10 +19,10 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
-import static com.quanxiaoha.framework.common.constant.DateConstants.DATE_FORMATTER;
-import static com.quanxiaoha.framework.common.constant.DateConstants.DATE_TIME_FORMATTER;
-import static com.quanxiaoha.framework.common.constant.DateConstants.DATE_TIME_PATTERN;
-import static com.quanxiaoha.framework.common.constant.DateConstants.TIME_FORMATTER;
+import static com.rednote.framework.common.constant.DateConstants.DATE_FORMATTER;
+import static com.rednote.framework.common.constant.DateConstants.DATE_TIME_FORMATTER;
+import static com.rednote.framework.common.constant.DateConstants.DATE_TIME_PATTERN;
+import static com.rednote.framework.common.constant.DateConstants.TIME_FORMATTER;
 
 /**
  * 认证服务的 JSON 日期时间配置，作用于 Spring 管理的 ObjectMapper。

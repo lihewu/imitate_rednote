@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.Assert;
 import org.slf4j.LoggerFactory;
-import com.quanxiaoha.framework.common.exception.BizException;
+import com.rednote.framework.common.exception.BizException;
 
 /** 创建号码认证客户端及短信工具，统一交由 Spring 管理。 */
 @Configuration(proxyBeanMethods = false)

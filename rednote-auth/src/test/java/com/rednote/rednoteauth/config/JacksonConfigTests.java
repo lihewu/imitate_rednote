@@ -2,7 +2,7 @@ package com.rednote.rednoteauth.config;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.quanxiaoha.framework.common.util.JsonUtils;
+import com.rednote.framework.common.util.JsonUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;

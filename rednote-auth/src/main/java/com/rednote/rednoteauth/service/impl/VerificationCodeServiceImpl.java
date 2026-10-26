@@ -1,7 +1,7 @@
 package com.rednote.rednoteauth.service.impl;
 
 import cn.hutool.core.util.RandomUtil;
-import com.quanxiaoha.framework.common.exception.BizException;
+import com.rednote.framework.common.exception.BizException;
 import com.rednote.rednoteauth.constant.RedisKeyConstants;
 import com.rednote.rednoteauth.enums.ResponseCodeEnum;
 import com.rednote.rednoteauth.service.VerificationCodeService;

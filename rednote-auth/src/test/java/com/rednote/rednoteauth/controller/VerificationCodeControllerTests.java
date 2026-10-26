@@ -1,6 +1,6 @@
 package com.rednote.rednoteauth.controller;
 
-import com.quanxiaoha.framework.common.exception.BizException;
+import com.rednote.framework.common.exception.BizException;
 import com.rednote.rednoteauth.enums.ResponseCodeEnum;
 import com.rednote.rednoteauth.exception.GlobalExceptionHandler;
 import com.rednote.rednoteauth.service.VerificationCodeService;
@@ -45,6 +45,18 @@ class VerificationCodeControllerTests {
                 .andExpect(jsonPath("$.message").value("请求太频繁，请3分钟后再试"))
                 .andExpect(jsonPath("$.errorCode").value("AUTH-20000"))
                 .andExpect(jsonPath("$.data").isEmpty());
+    }
+
+    @Test
+    void returnsInvalidPhoneValueInMessage() throws Exception {
+        for (String phone : new String[]{"123", "1801993910x", "${1+1}", "{phone}"}) {
+            mvc.perform(post("/verification/code/send").contentType(MediaType.APPLICATION_JSON)
+                            .content("{\"phone\":\"" + phone + "\"}"))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.success").value(false))
+                    .andExpect(jsonPath("$.message").value("手机号码格式不正确，当前值：" + phone));
+        }
+        verifyNoInteractions(service);
     }
 
     @Test

@@ -67,7 +67,7 @@ class AliyunSmsHelperTests {
     @Test
     void disabledServiceNeverPretendsToSend() throws Exception {
         SmsSender disabled = new AliyunSmsClientConfig().disabledSmsSender();
-        assertThrows(com.quanxiaoha.framework.common.exception.BizException.class,
+        assertThrows(com.rednote.framework.common.exception.BizException.class,
                 () -> disabled.sendVerificationCode("18019939108", "012345"));
     }
 }

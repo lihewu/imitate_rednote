@@ -1,6 +1,6 @@
 package com.rednote.rednoteauth.controller;
 
-import com.quanxiaoha.framework.common.response.Response;
+import com.rednote.framework.common.response.Response;
 import com.rednote.rednoteauth.model.vo.verificationcode.SendVerificationCodeReqVO;
 import com.rednote.rednoteauth.service.VerificationCodeService;
 import jakarta.validation.Valid;

@@ -2,8 +2,8 @@ package com.rednote.rednoteauth.controller;
 
 import cn.dev33.satoken.stp.SaTokenInfo;
 import cn.dev33.satoken.stp.StpUtil;
-import com.quanxiaoha.framework.biz.operationlog.aspect.ApiOperationLog;
-import com.quanxiaoha.framework.common.response.Response;
+import com.rednote.framework.biz.operationlog.aspect.ApiOperationLog;
+import com.rednote.framework.common.response.Response;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;

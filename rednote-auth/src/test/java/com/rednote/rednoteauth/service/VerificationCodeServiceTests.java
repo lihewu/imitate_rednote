@@ -1,6 +1,6 @@
 package com.rednote.rednoteauth.service;
 
-import com.quanxiaoha.framework.common.exception.BizException;
+import com.rednote.framework.common.exception.BizException;
 import com.rednote.rednoteauth.service.impl.VerificationCodeServiceImpl;
 import com.rednote.rednoteauth.sms.SmsSender;
 import org.junit.jupiter.api.BeforeEach;

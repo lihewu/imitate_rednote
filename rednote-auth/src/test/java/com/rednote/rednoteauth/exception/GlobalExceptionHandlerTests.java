@@ -1,7 +1,7 @@
 package com.rednote.rednoteauth.exception;
 
-import com.quanxiaoha.framework.common.exception.BizException;
-import com.quanxiaoha.framework.common.response.Response;
+import com.rednote.framework.common.exception.BizException;
+import com.rednote.framework.common.response.Response;
 import com.rednote.rednoteauth.controller.TestController;
 import com.rednote.rednoteauth.enums.ResponseCodeEnum;
 import org.junit.jupiter.api.Test;

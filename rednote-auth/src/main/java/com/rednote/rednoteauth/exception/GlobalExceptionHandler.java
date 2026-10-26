@@ -1,7 +1,7 @@
 package com.rednote.rednoteauth.exception;
 
-import com.quanxiaoha.framework.common.exception.BizException;
-import com.quanxiaoha.framework.common.response.Response;
+import com.rednote.framework.common.exception.BizException;
+import com.rednote.framework.common.response.Response;
 import com.rednote.rednoteauth.enums.ResponseCodeEnum;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
@@ -10,6 +10,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
@@ -52,7 +54,18 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             log.warn("请求异常：{}, type={}", request.getDescription(false),
                     exception.getClass().getSimpleName());
         }
-        return super.handleExceptionInternal(exception, Response.fail(responseCode),
+        Response<Void> response = Response.fail(responseCode);
+        if (exception instanceof MethodArgumentNotValidException validationException) {
+            // 仅回显手机号格式校验的错误值，避免暴露其他字段（如密码）的内容。
+            for (FieldError error : validationException.getBindingResult().getFieldErrors()) {
+                if ("PhoneNumber".equals(error.getCode())) {
+                    response = Response.fail(responseCode.getErrorCode(),
+                            error.getDefaultMessage() + "，当前值：" + error.getRejectedValue());
+                    break;
+                }
+            }
+        }
+        return super.handleExceptionInternal(exception, response,
                 headers, statusCode, request);
     }
 }
