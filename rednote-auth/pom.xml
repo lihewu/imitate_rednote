@@ -33,6 +33,11 @@
             <groupId>cn.dev33</groupId>
             <artifactId>sa-token-spring-boot3-starter</artifactId>
         </dependency>
+        <!-- 将 Token 与 Session 存储到 Redis，复用 spring.data.redis 配置 -->
+        <dependency>
+            <groupId>cn.dev33</groupId>
+            <artifactId>sa-token-redis-template</artifactId>
+        </dependency>
 
         <!-- API 操作日志切面组件，版本由根 POM 统一管理 -->
         <dependency>

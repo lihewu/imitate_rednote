@@ -83,6 +83,11 @@
         <artifactId>sa-token-spring-boot3-starter</artifactId>
         <version>${sa-token.version}</version>
       </dependency>
+      <dependency>
+        <groupId>cn.dev33</groupId>
+        <artifactId>sa-token-redis-template</artifactId>
+        <version>${sa-token.version}</version>
+      </dependency>
 
       <!-- Spring Boot BOM：统一管理 Web、Actuator、数据访问、测试等依赖 -->
       <dependency>
