@@ -9,6 +9,17 @@ public final class RedisKeyConstants {
 
     public static final String USER_ROLES_KEY_PREFIX = "user:roles:";
 
+    /** Hash：角色编码 -> 权限编码 JSON 数组。 */
+    public static final String ROLE_PERMISSIONS_KEY = "role:permissions";
+
+    public static String buildRolePermissionsLockKey(String cacheKey) {
+        // 与缓存使用同一 Redis Cluster hash slot；也兼容自定义 Key 自带 hash tag。
+        int start = cacheKey.indexOf('{');
+        int end = start < 0 ? -1 : cacheKey.indexOf('}', start + 1);
+        String tag = end > start + 1 ? cacheKey.substring(start + 1, end) : cacheKey;
+        return "{" + tag + "}:sync:lock";
+    }
+
     private RedisKeyConstants() {
     }
 
