@@ -8,6 +8,8 @@ import com.rednote.rednoteauth.constant.RedisKeyConstants;
 import com.rednote.rednoteauth.constant.RoleConstants;
 import com.rednote.rednoteauth.domain.dataobject.UserDO;
 import com.rednote.rednoteauth.domain.mapper.UserDOMapper;
+import com.rednote.rednoteauth.model.vo.user.UserLoginReqVO;
+import com.rednote.rednoteauth.service.impl.UserServiceImpl;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -15,6 +17,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -22,6 +26,9 @@ import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.*;
+import static org.mockito.AdditionalAnswers.delegatesTo;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -34,6 +41,7 @@ class UserLoginIntegrationTests {
     @Autowired ObjectMapper json;
     @Autowired UserDOMapper users;
     @Autowired StringRedisTemplate redis;
+    @Autowired PlatformTransactionManager transactionManager;
     private String phone;
     private Long ownedUserId;
 
@@ -73,6 +81,36 @@ class UserLoginIntegrationTests {
         users.insertSelective(user);
         ownedUserId = user.getId();
         return user;
+    }
+
+    @Test
+    void registrationRollsBackWhenFailureOccursAfterInsert() {
+        code();
+        UserDOMapper failingMapper = mock(UserDOMapper.class, delegatesTo(users));
+        Long[] insertedId = new Long[1];
+        doAnswer(invocation -> {
+            assertThat(TransactionSynchronizationManager.isActualTransactionActive()).isTrue();
+            UserDO user = invocation.getArgument(0);
+            users.insertSelective(user);
+            insertedId[0] = user.getId();
+            assertThat(insertedId[0]).isNotNull();
+            throw new IllegalStateException("模拟插入后失败");
+        }).when(failingMapper).insertSelective(any(UserDO.class));
+
+        UserLoginReqVO request = new UserLoginReqVO();
+        request.setPhone(phone);
+        request.setCode("012345");
+        request.setType(1);
+        UserServiceImpl service = new UserServiceImpl(failingMapper, redis, transactionManager);
+        assertThatThrownBy(() -> service.loginAndRegister(request))
+                .isInstanceOf(IllegalStateException.class).hasMessage("模拟插入后失败");
+
+        assertThat(users.selectByPhone(phone)).isNull();
+        assertThat(TransactionSynchronizationManager.isActualTransactionActive()).isFalse();
+        assertThat(redis.hasKey(RedisKeyConstants.buildUserRolesKey(insertedId[0]))).isFalse();
+        assertThat(StpUtil.getSessionByLoginId(insertedId[0], false)).isNull();
+        // Redis 不参与 MySQL 事务：验证码仍已消费，编号不回退。
+        assertThat(redis.hasKey(RedisKeyConstants.buildVerificationCodeKey(phone))).isFalse();
     }
 
     @Test

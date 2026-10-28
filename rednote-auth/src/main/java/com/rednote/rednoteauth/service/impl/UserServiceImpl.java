@@ -15,20 +15,31 @@ import com.rednote.rednoteauth.enums.LoginTypeEnum;
 import com.rednote.rednoteauth.enums.ResponseCodeEnum;
 import com.rednote.rednoteauth.model.vo.user.UserLoginReqVO;
 import com.rednote.rednoteauth.service.UserService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserDOMapper userDOMapper;
     private final StringRedisTemplate redisTemplate;
+    private final TransactionTemplate registrationTransaction;
+
+    public UserServiceImpl(UserDOMapper userDOMapper, StringRedisTemplate redisTemplate,
+                           PlatformTransactionManager transactionManager) {
+        this.userDOMapper = userDOMapper;
+        this.redisTemplate = redisTemplate;
+        this.registrationTransaction = new TransactionTemplate(transactionManager);
+        // 每次注册尝试独立提交，确保返回后可以安全写入 Redis 登录态。
+        this.registrationTransaction.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+    }
 
     // 首次初始化为 10000 后递增；Lua 保证多实例并发初始化/取号的原子性。
     // 在 Redis 内限制长度，避免超过 t_user.rednote_id 的 VARCHAR(15)。
@@ -89,13 +100,16 @@ public class UserServiceImpl implements UserService {
                     .createTime(now).updateTime(now)
                     .build();
             try {
-                int inserted = userDOMapper.insertSelective(user);
-                // XML 的 useGeneratedKeys/keyProperty 将 MySQL 自增主键回填到 user.id。
-                if (inserted != 1 || user.getId() == null) {
-                    throw new BizException(ResponseCodeEnum.SYSTEM_ERROR);
-                }
-                return user;
+                return registrationTransaction.execute(status -> {
+                    int inserted = userDOMapper.insertSelective(user);
+                    // 校验也在事务内，主键回填失败时回滚插入。
+                    if (inserted != 1 || user.getId() == null) {
+                        throw new BizException(ResponseCodeEnum.SYSTEM_ERROR);
+                    }
+                    return user;
+                });
             } catch (DuplicateKeyException exception) {
+                // execute 抛出异常时本次事务已回滚，后续查询和重试不在失败事务中。
                 // 手机号唯一索引防止重复注册；编号冲突则取下一个编号重试。
                 UserDO existing = userDOMapper.selectByPhone(phone);
                 if (existing != null) {
