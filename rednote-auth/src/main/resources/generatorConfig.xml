@@ -9,6 +9,7 @@
         <property name="beginningDelimiter" value="`" />
         <property name="endingDelimiter" value="`" />
 
+        <plugin type="org.mybatis.generator.plugins.UnmergeableXmlMappersPlugin" />
         <commentGenerator>
             <property name="suppressDate" value="true" />
         </commentGenerator>
@@ -40,6 +41,8 @@
                enableCountByExample="false" enableSelectByExample="false"
                enableUpdateByExample="false" enableDeleteByExample="false">
             <generatedKey column="id" sqlStatement="JDBC" identity="true" />
+            <columnOverride column="sex" javaType="java.lang.Integer" />
+            <columnOverride column="status" javaType="java.lang.Integer" />
         </table>
     </context>
 </generatorConfiguration>

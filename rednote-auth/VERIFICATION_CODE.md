@@ -61,6 +61,6 @@
 
 选择包含 `${code}` 和 `${min}` 的赠送模板，分别传入本地验证码和 `3`。原短信服务的签名、`SMS_...` 模板编号不能直接当作号码认证配置使用，请从号码认证控制台复制实际配置。现有环境变量名称保留，无需重新保存 AccessKey；需确认该账号具备新服务权限。密钥不应写入代码或提交到仓库。默认关闭时应用可以启动，但发送接口会直接返回服务未启用。后台日志记录掩码手机号、供应商错误码和请求 ID；已受理不等于运营商已送达。
 
-另需通过现有 `REDIS_HOST`、`REDIS_PORT`、`REDIS_PASSWORD` 等变量连接 Redis。本次未实现验证码登录消费接口。
+另需通过现有 `REDIS_HOST`、`REDIS_PORT`、`REDIS_PASSWORD` 等变量连接 Redis。验证码由 `POST /user/login` 原子校验并消费，详见 [用户登录说明](USER_LOGIN.md)。
 
 实现参考：[号码认证 SendSmsVerifyCode](https://help.aliyun.com/zh/pnvs/developer-reference/api-dypnsapi-2017-05-25-sendsmsverifycode)、[Hutool RandomUtil](https://plus.hutool.cn/apidocs/cn/hutool/core/util/RandomUtil.html)。

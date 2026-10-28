@@ -26,11 +26,11 @@ prod 环境需通过外部配置提供 `spring.data.redis`，或设置 Spring Bo
 启动 Redis 后，在仓库根目录运行（测试仅创建随机测试键并在结束后清理）：
 
 ```shell
-mvn -pl rednote-auth -am -Dtest=SaTokenRedisTests,RedisTests -Dsurefire.failIfNoSpecifiedTests=false test
+mvn -pl rednote-auth -am -Dtest=UserLoginIntegrationTests -Dsurefire.failIfNoSpecifiedTests=false test
 ```
 
-测试覆盖 Redis DAO 自动装配、Token 读写删除、Session 序列化，以及更新后保留 TTL。
-也可通过现有演示接口 `POST /login` 登录，携带返回的 `satoken` 请求头访问 `GET /isLogin`，
-重启应用后再次访问验证登录状态保留。该登录接口仍是演示账号实现。
+测试需要 MySQL 和 Redis，覆盖注册、登录、验证码消费和 Token 写入 Redis，并清理自己的测试数据。
+使用 `POST /user/login` 登录，返回的 `data` 即 Token，后续请求通过 `satoken` 请求头携带。
+旧演示接口 `/login`、`/isLogin`、`/test` 已删除。完整请求示例见 [用户登录说明](USER_LOGIN.md)。
 
 参考：[Sa-Token 官方 Redis 整合说明](https://sa-token.com/up/integ-redis.html)。
