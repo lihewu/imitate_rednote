@@ -70,7 +70,8 @@ class UserLoginIntegrationTests {
     private JsonNode login(Map<String, Object> body, int expectedStatus) throws Exception {
         String response = mvc.perform(post("/user/login").contentType("application/json")
                         .content(json.writeValueAsBytes(body)))
-                .andExpect(status().is(expectedStatus)).andReturn().getResponse().getContentAsString();
+                .andExpect(status().is(expectedStatus)).andReturn().getResponse()
+                .getContentAsString(java.nio.charset.StandardCharsets.UTF_8);
         return json.readTree(response);
     }
 
@@ -195,14 +196,38 @@ class UserLoginIntegrationTests {
 
     @Test
     void validatesTypePhoneAndConditionalCredentials() throws Exception {
+        code();
         for (Map<String, Object> request : java.util.List.<Map<String, Object>>of(
                 Map.of("phone", phone), Map.of("phone", phone, "type", 3),
                 Map.of("phone", "bad", "type", 1, "code", "012345"),
                 Map.of("phone", phone, "type", 1), Map.of("phone", phone, "type", 1, "code", "123"),
                 Map.of("phone", phone, "type", 2), Map.of("phone", phone, "type", 2, "password", " "),
                 Map.of("phone", phone, "type", 2, "password", "a".repeat(73)))) {
-            assertThat(login(request, 400).get("success").asBoolean()).isFalse();
+            JsonNode response = login(request, 400);
+            assertThat(response.get("success").asBoolean()).isFalse();
+            assertThat(response.get("errorCode").asText()).isEqualTo("10001");
+            assertThat(response.get("message").asText()).isNotBlank();
+            assertThat(response.get("data").isNull()).isTrue();
         }
+        assertThat(login(Map.of("phone", phone, "type", 2), 400).get("message").asText())
+                .isEqualTo("密码不能为空");
+        assertThat(redis.opsForValue().get(RedisKeyConstants.buildVerificationCodeKey(phone))).isEqualTo("012345");
         assertThat(users.selectByPhone(phone)).isNull();
+    }
+
+    @Test
+    void directServiceCallValidatesBeforeAccessingStorage() {
+        UserDOMapper mapper = mock(UserDOMapper.class);
+        StringRedisTemplate template = mock(StringRedisTemplate.class);
+        UserServiceImpl service = new UserServiceImpl(mapper, template, transactionManager);
+        assertThatThrownBy(() -> service.loginAndRegister(null))
+                .isInstanceOf(IllegalArgumentException.class).hasMessage("登录参数不能为空");
+        UserLoginReqVO request = new UserLoginReqVO();
+        request.setPhone(phone);
+        request.setType(1);
+        request.setCode("not-a-code");
+        assertThatThrownBy(() -> service.loginAndRegister(request))
+                .isInstanceOf(IllegalArgumentException.class).hasMessage("验证码必须为六位数字");
+        verifyNoInteractions(mapper, template);
     }
 }

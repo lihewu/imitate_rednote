@@ -3,6 +3,7 @@ package com.rednote.rednoteauth.service.impl;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.crypto.digest.BCrypt;
+import com.google.common.base.Preconditions;
 import com.rednote.framework.common.eumns.DeletedEnum;
 import com.rednote.framework.common.eumns.StatusEnum;
 import com.rednote.framework.common.exception.BizException;
@@ -24,6 +25,7 @@ import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import java.time.LocalDateTime;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @Service
@@ -57,6 +59,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public String loginAndRegister(UserLoginReqVO request) {
+        validateLoginRequest(request);
         UserDO user;
         if (Integer.valueOf(LoginTypeEnum.VERIFICATION_CODE.getType()).equals(request.getType())) {
             Long consumed = redisTemplate.execute(CONSUME_CODE,
@@ -87,6 +90,28 @@ public class UserServiceImpl implements UserService {
         // INSERT 已提交后再签发 Token，避免数据库回滚后留下有效登录态。
         StpUtil.login(user.getId());
         return StpUtil.getTokenValue();
+    }
+
+    /** 在访问数据库、消费验证码前校验，也覆盖直接调用 Service 的场景。 */
+    private void validateLoginRequest(UserLoginReqVO request) {
+        Preconditions.checkArgument(request != null, "登录参数不能为空");
+        Preconditions.checkArgument(request.getPhone() != null && !request.getPhone().isBlank(),
+                "手机号不能为空");
+        Preconditions.checkArgument(request.getPhone().matches("1[3-9][0-9]{9}"), "手机号格式不正确");
+        Integer type = request.getType();
+        Preconditions.checkArgument(type != null, "登录类型不能为空");
+        Preconditions.checkArgument(type == LoginTypeEnum.VERIFICATION_CODE.getType()
+                || type == LoginTypeEnum.PASSWORD.getType(), "登录类型只支持1（验证码）或2（密码）");
+        if (type == LoginTypeEnum.VERIFICATION_CODE.getType()) {
+            Preconditions.checkArgument(request.getCode() != null && !request.getCode().isBlank(),
+                    "验证码不能为空");
+            Preconditions.checkArgument(request.getCode().matches("[0-9]{6}"), "验证码必须为六位数字");
+        } else {
+            Preconditions.checkArgument(request.getPassword() != null && !request.getPassword().isBlank(),
+                    "密码不能为空");
+            Preconditions.checkArgument(request.getPassword().getBytes(StandardCharsets.UTF_8).length <= 72,
+                    "密码不能超过72字节");
+        }
     }
 
     private UserDO register(String phone) {

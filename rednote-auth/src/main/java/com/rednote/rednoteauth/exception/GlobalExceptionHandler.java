@@ -23,6 +23,19 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
+    /** Guava checkArgument 校验失败，统一返回参数错误；校验消息不得拼接密码或验证码。 */
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Response<Void>> handleIllegalArgumentException(
+            HttpServletRequest request, IllegalArgumentException exception) {
+        log.warn("参数校验失败：uri={}, type={}", request.getRequestURI(), exception.getClass().getSimpleName());
+        String message = exception.getMessage();
+        if (message == null || message.isBlank()) {
+            message = ResponseCodeEnum.PARAM_NOT_VALID.getErrorMessage();
+        }
+        return ResponseEntity.badRequest()
+                .body(Response.fail(ResponseCodeEnum.PARAM_NOT_VALID.getErrorCode(), message));
+    }
+
     /** 业务处理失败通过统一响应中的 success 和 errorCode 表达。 */
     @ExceptionHandler(BizException.class)
     public Response<Void> handleBizException(HttpServletRequest request, BizException exception) {

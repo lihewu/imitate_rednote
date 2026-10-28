@@ -37,6 +37,9 @@
 | `AUTH-20004` | 账号不可用 |
 
 业务错误通过 HTTP 200 的 `success=false` 表达；系统异常返回 HTTP 500。
+登录参数在 Service 入口使用 Guava `Preconditions.checkArgument` 校验，失败抛出
+`IllegalArgumentException`，由全局异常处理返回 HTTP 400、错误码 `10001` 和具体原因
+（例如“密码不能为空”）。提示不包含提交的密码或验证码。参数校验在验证码消费和数据库访问之前执行。
 当前未增加登录失败次数限制，部署公网前应配置登录限流。
 
 ## Redis 编号及角色缓存
