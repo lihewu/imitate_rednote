@@ -1,5 +1,5 @@
 server:
-  port: 8080 # 应用服务 WEB 访问端口
+  port: ${SERVER_PORT:8081} # 避免与 Nacos 控制台的 8080 端口冲突
 
 # 阿里云号码认证短信：使用控制台赠送的配套签名和模板，模板变量为 code、min。
 sms:
@@ -10,9 +10,29 @@ sms:
     sign-name: ${ALIYUN_SMS_SIGN_NAME:}
     template-code: ${ALIYUN_SMS_TEMPLATE_CODE:}
 
+# 可在 Nacos 中覆盖；sms：短信告警，mail：邮件告警
+alarm:
+  type: sms
+
 spring:
+  application:
+    name: rednote-auth
   profiles:
     active: dev # 默认激活 dev 开发环境
+  config:
+    # 必须成功读取配置中心；Data ID 默认是 rednote-auth-dev.yml
+    import:
+      - "nacos:${spring.application.name}-${spring.profiles.active}.yml?refreshEnabled=true"
+  cloud:
+    nacos:
+      config:
+        server-addr: ${NACOS_SERVER_ADDR:127.0.0.1:8848}
+        username: ${NACOS_USERNAME:nacos}
+        password: ${NACOS_PASSWORD}
+        # public 命名空间使用空值，其他命名空间填写 ID
+        namespace: ${NACOS_NAMESPACE:}
+        group: ${NACOS_GROUP:DEFAULT_GROUP}
+        file-extension: yml
 
 mybatis:
   # MyBatis XML 文件所在位置
