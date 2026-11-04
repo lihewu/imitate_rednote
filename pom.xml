@@ -56,6 +56,12 @@
   <!-- 统一依赖管理 -->
   <dependencyManagement>
     <dependencies>
+      <!-- Nacos 配置中心，版本由 Spring Cloud Alibaba BOM 管理 -->
+      <dependency>
+        <groupId>com.alibaba.cloud</groupId>
+        <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
+      </dependency>
+
       <dependency>
         <groupId>com.aliyun</groupId>
         <artifactId>dypnsapi20170525</artifactId>
