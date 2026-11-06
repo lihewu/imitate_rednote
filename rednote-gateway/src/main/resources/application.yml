@@ -1,0 +1,17 @@
+server:
+  # 避开认证服务 8081 和本地 Nacos 控制台 8080
+  port: ${SERVER_PORT:8082}
+
+spring:
+  main:
+    web-application-type: reactive
+  cloud:
+    gateway:
+      routes:
+        - id: rednote-auth
+          uri: lb://rednote-auth
+          predicates:
+            - Path=/auth/**
+          filters:
+            # /auth/user/login -> 认证服务的 /user/login
+            - StripPrefix=1

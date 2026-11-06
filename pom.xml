@@ -21,6 +21,7 @@
     <module>rednote-framework</module>
     <!-- 认证服务 -->
     <module>rednote-auth</module>
+    <module>rednote-gateway</module>
   </modules>
 
   <properties>
@@ -56,6 +57,13 @@
   <!-- 统一依赖管理 -->
   <dependencyManagement>
     <dependencies>
+      <!-- Nacos 服务注册与发现 -->
+      <dependency>
+        <groupId>com.alibaba.cloud</groupId>
+        <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+        <version>${spring-cloud-alibaba.version}</version>
+      </dependency>
+
       <!-- Nacos 配置中心，与 Spring Cloud Alibaba 版本保持一致 -->
       <dependency>
         <groupId>com.alibaba.cloud</groupId>

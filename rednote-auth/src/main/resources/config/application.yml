@@ -29,10 +29,17 @@ spring:
         server-addr: ${NACOS_SERVER_ADDR:127.0.0.1:8848}
         username: ${NACOS_USERNAME:nacos}
         password: ${NACOS_PASSWORD}
-        # public 命名空间使用空值，其他命名空间填写 ID
-        namespace: ${NACOS_NAMESPACE:}
+        # 填写命名空间 ID，可通过环境变量覆盖
+        namespace: ${NACOS_NAMESPACE:rednote}
         group: ${NACOS_GROUP:DEFAULT_GROUP}
         file-extension: yml
+      discovery:
+        enabled: true # 启用服务发现
+        group: DEFAULT_GROUP # 所属组
+        namespace: rednote # 命名空间 ID
+        server-addr: 127.0.0.1:8848 # Nacos 注册中心地址
+        username: ${NACOS_USERNAME:nacos}
+        password: ${NACOS_PASSWORD}
 
 mybatis:
   # MyBatis XML 文件所在位置

@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: rednote-gateway
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}
+  cloud:
+    nacos:
+      config:
+        server-addr: ${NACOS_SERVER_ADDR:127.0.0.1:8848}
+        username: ${NACOS_USERNAME:nacos}
+        password: ${NACOS_PASSWORD}
+        # namespace 填写命名空间 ID，与认证服务保持一致
+        namespace: ${NACOS_NAMESPACE:rednote}
+        group: ${NACOS_GROUP:DEFAULT_GROUP}
+        # 默认加载 rednote-gateway.yml 和 rednote-gateway-dev.yml
+        file-extension: yml
+      discovery:
+        enabled: true
+        register-enabled: true
+        server-addr: ${NACOS_SERVER_ADDR:127.0.0.1:8848}
+        username: ${NACOS_USERNAME:nacos}
+        password: ${NACOS_PASSWORD}
+        namespace: ${NACOS_NAMESPACE:rednote}
+        group: ${NACOS_GROUP:DEFAULT_GROUP}
