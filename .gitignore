@@ -42,3 +42,5 @@ build/
 
 ### Application logs ###
 logs/
+
+/AGENTS.md
